@@ -1,0 +1,47 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "username": "Alice",
+      "email": "alice@example.com",
+      "password": "alice123"
+    },
+    {
+      "id": "63d2",
+      "username": "gowri",
+      "email": "gowri@gmail",
+      "password": "gowri",
+      "books": [
+        {
+          "booktitle": "Daily Expenses"
+        },
+        {
+          "booktitle": "Monthly Budget"
+        },
+        {
+          "booktitle": "Trip Expenses"
+        },
+        {
+          "booktitle": "test"
+        }
+      ]
+    },
+    {
+      "id": "e925",
+      "username": "test",
+      "email": "test@g",
+      "password": "test"
+    },
+    {
+      "id": "37d0",
+      "username": "pinki",
+      "email": "pinki@gmail.com",
+      "password": "pinki",
+      "books": [
+        {
+          "booktitle": "expences"
+        }
+      ]
+    }
+  ]
+}
