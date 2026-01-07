@@ -120,12 +120,19 @@
                             </mat-error>
                         </mat-form-field>
                     </div>
+                    <div>
                     @if(entryCode == 1){
-                    <button mat-flat-button style="background-color: green; color:white;" (click)="addCashInEntry()" [disabled]="true">Saveeels</button>
+                    <button type="button" mat-flat-button 
+                    (click)="addCashInEntry()" 
+                    [disabled]="!(addForm.dirty && addForm.valid)">Save</button>
                     }@else {
-                    <button mat-flat-button style="background-color: red; color:white;" (click)="addCashOutEntry()" [disabled]="!(addForm.dirty && addForm.valid)">Save</button>   
+                    <button mat-flat-button  
+                    (click)="addCashOutEntry()" 
+                    [disabled]="!(addForm.dirty && addForm.valid)">Save</button>   
                     }
+                    </div>
                 </form>
+                   
              </div>
     </div>
 
