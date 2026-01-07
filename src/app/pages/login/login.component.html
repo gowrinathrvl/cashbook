@@ -1,0 +1,59 @@
+<div class="container-fluid mt-3">
+    <div class="col-4 mx-auto">
+        <div class="card p-0" style="box-shadow: 1px 1px 10px blueviolet;">
+            <div class="card-header"
+                style="background-color: blueviolet; color: #fff; font-size: 24px; font-weight:500;">
+               Login
+            </div>
+            <div class="card-body">
+                <form [formGroup]="loginForm">
+                    <p>
+                        <mat-form-field appearance="outline" style="width:100%;">
+                            <mat-label>Username: </mat-label>
+                            <input matInput formControlName="username" placeholder="Enter your username" />
+                        </mat-form-field>
+                        <mat-error>
+                            @if(loginForm.controls.username.invalid &&
+                            loginForm.controls.username.touched) {
+
+                            @if(loginForm.controls.username.errors?.required) {
+                            <span>Username is required</span>
+                            }
+
+                            @if(loginForm.controls.username.errors?.pattern) {
+                            <span>Invalid Username format – No special characters allowed</span>
+                            }
+                            }
+                        </mat-error>
+                    </p>
+                     <p>
+                        <mat-form-field appearance="outline" style="width:100%;">
+                            <mat-label>Password: </mat-label>
+                            <input matInput formControlName="password" type="password"   placeholder="Enter your password" />
+                        </mat-form-field>
+                        <mat-error>
+                            @if(loginForm.controls.password.invalid &&
+                            loginForm.controls.password.touched) {
+
+                            @if(loginForm.controls.password.errors?.required) {
+                            <span>Password is required</span>
+                            }
+
+                            @if(loginForm.controls.password.errors?.password) {
+                            <span>Invalid Password </span>
+                            }
+                            }
+                        </mat-error>
+                    </p>
+                    
+                </form>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <button mat-flat-button style="margin-bottom: 10px;" (click)="onLogin()">Login</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

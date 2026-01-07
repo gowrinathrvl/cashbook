@@ -1,0 +1,72 @@
+<div class="container-fluid mt-3">
+    <div class="col-4 mx-auto">
+        <div class="card p-0" style="box-shadow: 1px 1px 10px blueviolet;">
+            <div class="card-header"
+                style="background-color: blueviolet; color: #fff; font-size: 24px; font-weight:500;">
+                Register Here
+            </div>
+            <div class="card-body">
+                <form [formGroup]="registerForm">
+                    <p>
+                        <mat-form-field appearance="outline" style="width:100%;">
+                            <mat-label>Username: </mat-label>
+                            <input matInput formControlName="username" placeholder="Enter your username" />
+                        </mat-form-field>
+                        <mat-error>
+                            @if(registerForm.controls.username.invalid &&
+                            registerForm.controls.username.touched) {
+
+                            @if(registerForm.controls.username.errors?.required) {
+                            <span>Username is required</span>
+                            }
+
+                            @if(registerForm.controls.username.errors?.pattern) {
+                            <span>Invalid Username format – No special characters allowed</span>
+                            }
+                            }
+                        </mat-error>
+                    </p>
+                     <p>
+                        <mat-form-field appearance="outline" style="width:100%;">
+                            <mat-label>Email: </mat-label>
+                            <input matInput formControlName="email" placeholder="Enter your email" />
+                        </mat-form-field>
+                        <mat-error>
+                            @if(registerForm.controls.email.invalid &&
+                            registerForm.controls.email.touched) {
+
+                            @if(registerForm.controls.email.errors?.required) {
+                            <span>Email is required</span>
+                            }
+
+                            @if(registerForm.controls.email.errors?.email) {
+                            <span>Invalid email </span>
+                            }
+                            }
+                        </mat-error>
+                    </p>
+                     <p>
+                        <mat-form-field appearance="outline" style="width:100%;">
+                            <mat-label>Password: </mat-label>
+                            <input matInput type="password" formControlName="password" placeholder="Enter your password" />
+                        </mat-form-field>
+                        <mat-error>
+                            @if(registerForm.controls.password.invalid &&
+                            registerForm.controls.password.touched) {
+                            @if(registerForm.controls.password.errors?.required) {
+                            <span>password is required</span>
+                            }
+                            }
+                        </mat-error>
+                    </p>
+                </form>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <button mat-flat-button style="margin-bottom: 10px;" (click)="onRegister()">Register</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

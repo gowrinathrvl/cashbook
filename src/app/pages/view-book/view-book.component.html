@@ -1,0 +1,132 @@
+<div class="container-fluid">
+    <div class="row mt-3">
+        <div class="col text-center">
+            <button mat-mini-fab style="background-color: brown;" (click)="goBack()">
+                <mat-icon style="color: white;" matTooltip="Back">keyboard_backspace</mat-icon>
+            </button>
+            <span style="font-size: 18px; margin-left: 20px;">
+                Book:<span class="book-name">{{ bookname }}</span>
+            </span>
+
+        </div>
+    
+
+    <div class="col text-center">
+        <mat-form-field appearance="outline">
+            <mat-label>Search:</mat-label>
+            <input matInput placeholder="Search Entries" [(ngModel)]="searchKey">
+            <button matSuffix mat-icon-button aria-label="Clear">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-form-field>
+    </div>
+    <div class="col text-center">
+        <button mat-flat-button style="background-color: green; color:white;" (click)="toggleDrawerForCashIn()"> + Cash
+            In</button>
+        <button mat-flat-button style="background-color: brown; color:white;" (click)="toggleDrawerForCashOut()"> - Cash
+            Out</button>
+    </div>
+    </div>
+    <mat-divider></mat-divider>
+</div>
+<div class="container mt-3">
+    <div class="row text-center">
+        <div class="col">
+            <mat-icon style="background-color: green; color: white; border-radius: 100px;">add</mat-icon>Cash In
+            <span style="font-size: 24px; color: green;">&#8377; 0/-</span>
+        </div>
+         <div class="col">
+            <mat-icon style="background-color: brown; color: white; border-radius: 100px;">remove</mat-icon>Cash Out
+            <span style="font-size: 24px; color: brown;">&#8377; 0/-</span>
+        </div>
+         <div class="col">
+            <mat-icon style="background-color: blue; color: white; border-radius: 100px;">check</mat-icon>Balance Amount
+            <span style="font-size: 24px; color: blue;">&#8377; 0/-</span>
+        </div>
+    </div>
+</div>
+<mat-divider></mat-divider>
+
+<div class="drawer-container" [ngClass]="{'open': isDrawerOpen}">
+    <div class="drawer-content">
+        <mat-toolbar>
+            {{title}}
+            <span class="spacer"></span>
+            <button mat-icon-button (click)="toggleDrawer()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar>
+        <mat-divider></mat-divider>
+            <!-- DRAWER CONTENT HERE -->
+            <div class="container mt-3">
+                <form [formGroup]="addForm">
+                    <div class="row col-12">
+                        <div class="col-6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Date:</mat-label>
+                                <input matInput formControlName="date" [matDatepicker]="picker" placeholder="Choose a date">
+                                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                                <mat-error>
+                                    @if (addForm.controls.date.touched && addForm.controls.date.invalid) {
+                                    @if(addForm.controls.date.errors?.required) {
+                                    <span>Transaction Date is required</span>
+                                    }
+                                    }
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Time:</mat-label>
+                                <input matInput [ngxTimepicker]="timepicker" formControlName="time" placeholder="Enter Time">
+                                <ngx-material-timepicker #timepicker></ngx-material-timepicker>
+                                <mat-icon matSuffix>schedule</mat-icon>
+                                <mat-error>
+                                    @if (addForm.controls.time.touched && addForm.controls.time.invalid) {
+                                    @if(addForm.controls.time.errors?.required) {
+                                    <span>Transaction Time is required</span>
+                                    }
+                                    }
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row col-12">
+                        <mat-form-field appearance="outline" >
+                            <mat-label>Amount:</mat-label>
+                            <input matInput type="number" formControlName="amount">
+                            <mat-icon matPrefix>currency_rupee</mat-icon>
+                            <mat-error>
+                                @if (addForm.controls.amount.touched && addForm.controls.amount.invalid) {
+                                @if(addForm.controls.amount.errors?.required) {
+                                <span>Amount is required</span>
+                                }
+                                }
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="row col-12">
+                        <mat-form-field appearance="outline" >
+                            <mat-label>Description:</mat-label>
+                            <input matInput type="text" formControlName="description">
+                            <mat-icon matPrefix>description</mat-icon>
+                            <mat-error>
+                                @if (addForm.controls.description.touched && addForm.controls.description.invalid) {
+                                @if(addForm.controls.description.errors?.required) {
+                                <span>Description is required</span>
+                                }
+                                }
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    @if(entryCode == 1){
+                    <button mat-flat-button style="background-color: green; color:white;" (click)="addCashInEntry()" [disabled]="true">Saveeels</button>
+                    }@else {
+                    <button mat-flat-button style="background-color: red; color:white;" (click)="addCashOutEntry()" [disabled]="!(addForm.dirty && addForm.valid)">Save</button>   
+                    }
+                </form>
+             </div>
+    </div>
+
+</div>
