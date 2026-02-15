@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { AfterViewInit, Component, inject, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {MatButtonModule} from '@angular/material/button';
 import { CommonModule, DatePipe } from '@angular/common';
 import {MatIconModule} from '@angular/material/icon';
@@ -12,6 +12,10 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import { ToastrService } from 'ngx-toastr';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { UserService } from '../../services/user.service';
+import { GlobalProperties } from '../../shared/globalProperties';
+import {MatTableDataSource, MatTableModule} from '@angular/material/table';
+import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 
 
 
@@ -20,7 +24,7 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
   selector: 'app-view-book',
   standalone: true,
   imports: [
-  CommonModule,
+    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
@@ -31,14 +35,17 @@ import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
     MatToolbarModule,
     ReactiveFormsModule,
     MatDatepickerModule,
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
+    MatTableModule,
+    MatPaginatorModule,
+    RouterLink
 ],
   templateUrl: './view-book.component.html',
   styleUrl: './view-book.component.css',
   providers: [DatePipe],
   preserveWhitespaces: true,
 })
-export class ViewBookComponent implements OnInit{
+export class ViewBookComponent implements OnInit, AfterViewInit{
   activatedRoute = inject(ActivatedRoute);
   bookname: any = '';
   searchKey: string = '';
@@ -49,19 +56,24 @@ export class ViewBookComponent implements OnInit{
   cashInMoney:number;
   cashOutMoney:number;
   title: any;
-
+  entries: any;
+  displayedColumns : string [] = ['date', 'time', 'description','amount', 'actions'];
   
   
   fb =inject(FormBuilder);
+  userservice = inject(UserService);
   datePipe = inject(DatePipe);
   router = inject(Router);
   toster = inject(ToastrService)
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor() { 
     this.activatedRoute.queryParams.subscribe(params => {
       this.bookname = params['book'];
        });
 }
+
 
   ngOnInit() {
     const currentTime = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
@@ -71,6 +83,7 @@ export class ViewBookComponent implements OnInit{
       amount: [0, Validators.required],
       description: ['', Validators.required],
     });
+    this.getTotals();
   }
 
 
@@ -90,10 +103,131 @@ toggleDrawerForCashOut(){
 }
 toggleDrawer(){
   this.isDrawerOpen = !this.isDrawerOpen;
+  this.resetForm();
 }
-addCashInEntry(){
-  console.log("test");
+
+  async save() {
+    const formData = this.addForm.value;
+    const transactionDate = this.datePipe.transform(formData.date, 'MM/dd/YYY');
+    const data = {
+      date: transactionDate,
+      time: formData.time,
+      amount: formData.amount,
+      description: formData.description
+    }
+    let userDetails = this.userservice.retrieveCredentials();
+    console.log("🚀 ~ ViewBookComponent ~ save ~ userDetails:", userDetails)
+    await this.userservice.getUsers().subscribe({
+      next: (res: any) => {
+        console.log("🚀 ~ ViewBookComponent ~ save ~ res:", res)
+        res.find(obj => {
+          if (obj.username === userDetails?.username && obj.password === userDetails?.password) {
+            this.userId = obj.id;
+            console.log("🚀 ~ ViewBookComponent ~ save ~ this.userId:", this.userId)
+          }
+        })
+        if (this.entryCode == 1) {
+          this.userservice.cashInEntry(this.userId, this.bookname, data).subscribe({
+            next: (res: any) => {
+              console.log("🚀 ~ ViewBookComponent ~ save ~ res:", res)
+              this.toster.success('Entry added successfully', 'Success', GlobalProperties.toastrconfig);
+              this.getTotals();
+              this.resetForm();
+              this.toggleDrawer();
+              this.getEntriesTable();
+            }
+          })
+        }
+        if (this.entryCode == 2) {
+          this.userservice.cashOutEntry(this.userId, this.bookname, data).subscribe({
+            next: (res: any) => {
+              this.toster.success('Entry added successfully', 'Success', GlobalProperties.toastrconfig);
+              this.getTotals();
+              this.resetForm();
+              this.toggleDrawer();
+              this.getEntriesTable();
+            }
+          })
+        }
+      },
+      error: (err: any) => {
+        this.toster.error('Failed to add entry', 'Failed', GlobalProperties.toastrconfig);
+      }
+
+    }
+    )
+  }
+
+resetForm(){
+  const initialTime = new Date().toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit' });
+  this.addForm.setValue({
+    date: new Date(),
+    time: initialTime,
+    amount: 0,
+    description: ''
+  }); 
 }
-addCashOutEntry(){}
+
+
+getTotals(){
+  console.log("getting totals for book:", this.bookname);
+  let userDetails = this.userservice.retrieveCredentials();
+  this.userservice.getUsers().subscribe({
+    next: (res:any) =>{
+      res.find((obj:any) => {
+        if(obj.username === userDetails?.username && obj.password === userDetails?.password){
+          this.userId = obj.id;
+
+          obj.books.forEach((book:any) => {
+            if(book.booktitle === this.bookname){
+              console.log("book details", book, this.bookname);
+              this.cashInMoney = book.cashInTotal || 0;
+              this.cashOutMoney = book.cashOutTotal || 0;
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
+getEntriesTable(){
+  let userDetails = this.userservice.retrieveCredentials();
+  this.userservice.getUsers().subscribe({
+    next: (res:any) =>{
+      res.find((obj:any) => {
+        if(obj.username === userDetails?.username && obj.password === userDetails?.password){
+          this.userId = obj.id;
+        }
+      })
+      this.userservice.entriesTable(this.userId, this.bookname).subscribe({
+        next: (entries:any) =>{
+          this.entries = new MatTableDataSource(entries);
+          this.entries.paginator = this.paginator;
+
+        }
+      })
+
+}
+  })
+}
+
+get hasEntries(): boolean {
+  return this.entries?.data.length > 0; 
+}
+
+ngAfterViewInit(): void {
+    this.getEntriesTable();
+}
+
+applyFilter( value: any){
+  this.entries.filter = value.trim().toLowerCase(); 
+}
+
+onSearchClear(){
+  this.searchKey = '';
+  this.applyFilter(this.searchKey);
+}
+
 
 }

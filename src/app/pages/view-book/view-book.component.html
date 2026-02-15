@@ -9,23 +9,21 @@
             </span>
 
         </div>
-    
-
-    <div class="col text-center">
-        <mat-form-field appearance="outline">
-            <mat-label>Search:</mat-label>
-            <input matInput placeholder="Search Entries" [(ngModel)]="searchKey">
-            <button matSuffix mat-icon-button aria-label="Clear">
-                <mat-icon>close</mat-icon>
-            </button>
-        </mat-form-field>
-    </div>
-    <div class="col text-center">
-        <button mat-flat-button style="background-color: green; color:white;" (click)="toggleDrawerForCashIn()"> + Cash
-            In</button>
-        <button mat-flat-button style="background-color: brown; color:white;" (click)="toggleDrawerForCashOut()"> - Cash
-            Out</button>
-    </div>
+        <div class="col text-center">
+            <mat-form-field appearance="outline">
+                <mat-label>Search</mat-label>
+                <input matInput placeholder="Search Entries" [(ngModel)]="searchKey" (keyup)="applyFilter($event.target.value)">
+                <button  matSuffix mat-icon-button aria-label="Clear"  (click)="onSearchClear()"  *ngIf = "searchKey">
+                    <mat-icon >close</mat-icon>
+                </button>
+            </mat-form-field>
+        </div>
+        <div class="col text-center">
+            <button mat-flat-button style="background-color: green; color:white;" (click)="toggleDrawerForCashIn()"> + Cash
+                In</button>
+            <button mat-flat-button style="background-color: brown; color:white;" (click)="toggleDrawerForCashOut()"> - Cash
+                Out</button>
+        </div>
     </div>
     <mat-divider></mat-divider>
 </div>
@@ -33,15 +31,19 @@
     <div class="row text-center">
         <div class="col">
             <mat-icon style="background-color: green; color: white; border-radius: 100px;">add</mat-icon>Cash In
-            <span style="font-size: 24px; color: green;">&#8377; 0/-</span>
+            <span style="font-size: 24px; color: green;">&#8377; {{ cashInMoney != null || undefined ? cashInMoney : 0 }}/-</span>
         </div>
          <div class="col">
             <mat-icon style="background-color: brown; color: white; border-radius: 100px;">remove</mat-icon>Cash Out
-            <span style="font-size: 24px; color: brown;">&#8377; 0/-</span>
+            <span style="font-size: 24px; color: brown;">&#8377; {{ cashOutMoney != null || undefined ? cashOutMoney : 0 }}/-</span>
         </div>
          <div class="col">
             <mat-icon style="background-color: blue; color: white; border-radius: 100px;">check</mat-icon>Balance Amount
-            <span style="font-size: 24px; color: blue;">&#8377; 0/-</span>
+            @if(cashInMoney - cashOutMoney){
+                <span style="font-size: 24px; color: blue;">&#8377; {{cashInMoney - cashOutMoney}}/-</span>
+            }@else{
+                <span style="font-size: 24px; color: blue;">&#8377; 0/-</span>
+            }
         </div>
     </div>
 </div>
@@ -123,17 +125,56 @@
                     <div>
                     @if(entryCode == 1){
                     <button type="button" mat-flat-button 
-                    (click)="addCashInEntry()" 
-                    [disabled]="!(addForm.dirty && addForm.valid)">Save</button>
+                    [disabled]="!(addForm.dirty && addForm.valid)" (click)="save()">Save</button>
                     }@else {
                     <button mat-flat-button  
-                    (click)="addCashOutEntry()" 
-                    [disabled]="!(addForm.dirty && addForm.valid)">Save</button>   
+                    [disabled]="!(addForm.dirty && addForm.valid)" (click)="save()">Save</button>   
                     }
                     </div>
                 </form>
                    
              </div>
     </div>
+</div>
 
+
+<div class="container mt-3">
+    @if(hasEntries){
+        <table mat-table [dataSource]="entries" class="mat-elevation-z8">
+            <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef>Date</th>
+                <td mat-cell *matCellDef="let element"
+                [ng-class] = "{'cash-in': element.type === 'cashIn', 'cash-out': element.type === 'cashOut'}">{{element.date | date:'dd/MM/yyyy'}}</td>
+            </ng-container>
+            <ng-container matColumnDef="time">
+                <th mat-header-cell *matHeaderCellDef>Time</th>
+                <td mat-cell *matCellDef="let element"
+                [ng-class] = "{'cash-in': element.type === 'cashIn', 'cash-out': element.type === 'cashOut'}">{{element.time}}</td>
+            </ng-container>
+            <ng-container matColumnDef="description">
+                <th mat-header-cell *matHeaderCellDef>Description</th>
+                <td mat-cell *matCellDef="let element"
+                [ng-class] = "{'cash-in': element.type === 'cashIn', 'cash-out': element.type === 'cashOut'}">{{element.description}}</td>
+            </ng-container>
+            <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef>Amount</th>
+                <td mat-cell *matCellDef="let element"
+                [ng-class] = "{'cash-in': element.type === 'cashIn', 'cash-out': element.type === 'cashOut'}">{{element.amount}}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let element"> 
+                    <mat-icon mat-tooltip="Edit" style="color: green;">edit</mat-icon> 
+                    <mat-icon mat-tooltip="Delete" style="color: brown;">delete</mat-icon> 
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+        <!-- paginatore -->
+         <mat-paginator [length]="entries.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" 
+                    showFirstLastButtons style="margin-top: 20px;"></mat-paginator>
+
+    }
 </div>

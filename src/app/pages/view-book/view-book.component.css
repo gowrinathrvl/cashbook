@@ -49,3 +49,15 @@
 ::ng-deep .timepicker-button{
     color: chocolate !important;
 }
+
+.cash-in{
+    color: green;
+}
+.cash-out{
+    color: red;
+}
+th{
+    background-color: chocolate !important;
+    color: white !important;
+    font-size: large;
+}

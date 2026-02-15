@@ -13,7 +13,67 @@
       "password": "gowri",
       "books": [
         {
-          "booktitle": "Daily Expenses"
+          "booktitle": "Daily Expenses",
+          "cashInEntries": [
+            {
+              "date": "01/22/2026",
+              "time": "07:42 PM",
+              "amount": 1000,
+              "description": "ddd"
+            },
+            {
+              "date": "01/22/2026",
+              "time": "07:43 PM",
+              "amount": 10000,
+              "description": "ere"
+            },
+            {
+              "date": "01/22/2026",
+              "time": "07:44 PM",
+              "amount": 344,
+              "description": "gs"
+            },
+            {
+              "date": "01/24/2026",
+              "time": "03:54 PM",
+              "amount": 2300,
+              "description": "test"
+            },
+            {
+              "date": "01/24/2026",
+              "time": "04:08 PM",
+              "amount": 1200,
+              "description": "ttteeestttt"
+            },
+            {
+              "date": "01/24/2026",
+              "time": "04:13 PM",
+              "amount": 1300,
+              "description": "wewewe"
+            },
+            {
+              "date": "01/24/2026",
+              "time": "04:18 PM",
+              "amount": 5000,
+              "description": "added"
+            },
+            {
+              "date": "02/15/2026",
+              "time": "05:24 PM",
+              "amount": 50000,
+              "description": "test amount"
+            }
+          ],
+          "cashInTotal": 71144,
+          "cashOutEntries": [
+            {
+              "date": "01/22/2026",
+              "time": "07:48 PM",
+              "amount": 2200,
+              "description": "remove"
+            }
+          ],
+          "cashOutTotal": 2200
         },
         {
           "booktitle": "Monthly Budget"
@@ -23,6 +83,33 @@
         },
         {
           "booktitle": "test"
+        },
+        {
+          "booktitle": "Rakesh rent expences",
+          "cashInEntries": [
+            {
+              "date": "01/24/2026",
+              "time": "04:20 PM",
+              "amount": 800,
+              "description": "rsct"
+            },
+            {
+              "date": "01/24/2026",
+              "time": "04:20 PM",
+              "amount": 50000,
+              "description": "sal"
+            }
+          ],
+          "cashInTotal": 50800,
+          "cashOutEntries": [
+            {
+              "date": "01/24/2026",
+              "time": "04:20 PM",
+              "amount": 2000,
+              "description": "shopping"
+            }
+          ],
+          "cashOutTotal": 2000
         }
       ]
     },
