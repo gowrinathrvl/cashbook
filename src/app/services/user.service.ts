@@ -126,7 +126,105 @@ export class UserService {
   }
 
 
+updateCashInEntry( userId:any, bookName:any, data:any):Observable<any> {
+  return this.http.get(`${this.url}/users/${userId}`).pipe(
+    switchMap((user:any )=>{
+      const updatedBook = user.books.map((book: any) => {
+        if(book.booktitle == bookName) {
+          const updatedCashInEntries = book.cashInEntries.map((entry:any) => {
+            if(entry.date == data.date && entry.time == data.time){
+              const CashInTotal = (book.cashInEntries || [])
+                                    .reduce((sum: number, entry: any) => sum + parseFloat(entry.amount), 0);
+              return {
+                ...entry,
+                ...data,
+                cashInTotal: CashInTotal
+              }
+            }
+            return entry;
+          })
+          const cashInTotal = updatedCashInEntries.reduce((sum: number, entry: any) => sum + parseFloat(entry.amount), 0);
+          return {
+            ...book,
+            cashInEntries: updatedCashInEntries,
+            cashInTotal: cashInTotal
+          }
+        }
+        return book;
+      })
+      return this.http.patch(`${this.url}/users/${userId}`, {books: updatedBook});
+    })
+  )
+}
 
+updateCashOutEntry( userId:any, bookName:any, data:any):Observable<any> {
+  return this.http.get(`${this.url}/users/${userId}`).pipe(
+    switchMap((user:any )=>{
+      const updatedBook = user.books.map((book: any) => {
+        if(book.booktitle === bookName) {
+          const updatedCashOutEntries = book.cashOutEntries.map((entry:any) => {
+            if(entry.date == data.date && entry.time == data.time){
+              const cashOutTotal = (book.cashOutEntries || [])
+                                    .reduce((sum: number, entry: any) => sum + parseFloat(entry.amount), 0);
+              return {
+                ...entry,
+                ...data,
+                cashOutTotal: cashOutTotal
+              }
+            }
+            return entry;
+          })
+          const cashOutTotal = updatedCashOutEntries.reduce((sum: number, entry: any) => sum + parseFloat(entry.amount), 0);
+          return {
+            ...book,
+            cashOutEntries: updatedCashOutEntries,
+            cashOutTotal: cashOutTotal
+          }
+        }
+        return book;
+      })
+      return this.http.patch(`${this.url}/users/${userId}`, {books: updatedBook});
+    })
+  ) 
+}
 
+deleteEntry(userId:any, bookName:any, entrytype:any, date:string, time:string):Observable<any> {
+  return this.http.get(`${this.url}/users/${userId}`).pipe(
+    switchMap((user:any) => {
+      const updatedBook = user.books.map((book:any) => {
+        if(book.booktitle === bookName) {
+          if(entrytype === 'cashIn') {
+            //reomove the entry from cashInEntries
+            const updatedCashInEntries = (book.cashInEtries || [])
+                                              .filter((entry:any) => !(entry.date === date && entry.time === time));
+
+           //calculate the new cashInTotal
+            const cashInTotal = updatedCashInEntries.reduce((sum: number, entry: any) => sum + parseFloat(entry.amount), 0);
+            return {
+              ...book,
+              cashInEntries: updatedCashInEntries,
+              cashInTotal: cashInTotal
+            }
+
+          } else if(entrytype === 'cashOut') {
+            //remove the entry from cashOutEntries
+            const updatedCashOutEntries = (book.cashOutEntries || [])
+                                              .filter((entry:any) => !(entry.date === date && entry.time === time));
+            //calculate the new cashOutTotal
+            const cashOutTotal = updatedCashOutEntries.reduce((sum: number, entry: any) => sum + parseFloat(entry.amount), 0);
+            return {
+              ...book,
+              cashOutEntries: updatedCashOutEntries,
+              cashOutTotal: cashOutTotal
+            }
+          }
+        }
+        return book;
+      })
+      return this.http.patch(`${this.url}/users/${userId}`, {books: updatedBook});
+    })
+  )
+
+}
 
 }

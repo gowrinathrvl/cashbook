@@ -16,6 +16,8 @@ import { UserService } from '../../services/user.service';
 import { GlobalProperties } from '../../shared/globalProperties';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { EditTransactionsComponent } from '../edit-transactions/edit-transactions.component';
 
 
 
@@ -58,6 +60,7 @@ export class ViewBookComponent implements OnInit, AfterViewInit{
   title: any;
   entries: any;
   displayedColumns : string [] = ['date', 'time', 'description','amount', 'actions'];
+  dialog = inject(MatDialog);
   
   
   fb =inject(FormBuilder);
@@ -229,5 +232,38 @@ onSearchClear(){
   this.applyFilter(this.searchKey);
 }
 
+onEdit(data: any){
+  console.log("🚀 ~ ViewBookComponent ~ onEdit ~ element:", data);
+  const dailogConfig = new MatDialogConfig();
+  dailogConfig.width = '400px';
+  dailogConfig.autoFocus = true;
+  dailogConfig.disableClose = true;
+  dailogConfig.data = {
+    data: data,
+    userId:this.userId,
+    bookname: this.bookname
+  }
+  const dialogRef = this.dialog.open(EditTransactionsComponent, dailogConfig);
+  dialogRef.componentInstance.emitter.subscribe({
+    next: (res) => {
+      this.getEntriesTable();
+      this.getTotals();
+    }
+  })
+}
+
+onDelete(data:any){
+  this.userservice.deleteEntry(this.userId, this.bookname, data.type, data.date, data.time).subscribe({
+    next: (res) => {
+      this.toster.success('Transaction deleted successfully', 'Success', GlobalProperties.toastrconfig);
+      this.getEntriesTable();
+      this.getTotals();
+    },
+    error: (err) => {
+      this.toster.error('Failed to delete entry', 'Failed', GlobalProperties.toastrconfig);
+    }
+  })
+
+}
 
 }
